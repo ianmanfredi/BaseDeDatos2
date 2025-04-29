@@ -1,0 +1,24 @@
+//ejercicio 1.1 y 1.2
+use ("empresa")
+db.empleados.insertMany([
+    { nombre: "Ana Gómez", edad: 28, puesto: "Desarrolladora Backend" },
+    { nombre: "Luis Pérez", edad: 35, puesto: "Diseñador UX/UI" },
+    { nombre: "María Rodríguez", edad: 30, puesto: "Desarrolladora Frontend" },
+    { nombre: "Carlos Ramírez", edad: 40, puesto: "Gerente de Proyectos" },
+    { nombre: "Elena Torres", edad: 25, puesto: "Analista QA" },
+    { nombre: "Javier Morales", edad: 32, puesto: "DevOps Engineer" },
+    { nombre: "Lucía Vargas", edad: 29, puesto: "Scrum Master" },
+    { nombre: "Diego Herrera", edad: 38, puesto: "Administrador de Base de Datos" },
+    { nombre: "Valeria López", edad: 27, puesto: "Soporte Técnico" },
+    { nombre: "Manuel Díaz", edad: 45, puesto: "CTO" },
+    {nombre: "Juan Lopez", edad: 25, puesto: "Pasante"}
+  ])
+db.empleados.find()
+// ejercicio 1.3
+use ("empresa")
+db.empleados.updateOne({nombre:"Manuel Díaz"}, {$set:{edad:47}})
+db.empleados.findOne({nombre:"Manuel Díaz"})
+// ejercicio 1.4
+use ("empresa")
+db.empleados.deleteOne({puesto:"Pasante"})
+db.empleados.findOne({puesto:"Pasante"})

@@ -1,0 +1,6 @@
+para crear un usuario:
+db.createUser({user:"usuario_empresa",pwd:"123",roles:[{role:"readWrite",db:"empresa"}]})
+para hacer un backup
+mysqldump -u root -p tp2 > backup.sql
+para hacer restore
+mongorestore --db tp2./backup/tp2
