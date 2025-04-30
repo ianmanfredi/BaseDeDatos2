@@ -1,0 +1,14 @@
+use("empresa")
+db.clientes.insertMany([
+    { nombre: "Juan", apellido: "Pérez" },
+    { nombre: "Lucía", apellido: "Gómez" },
+    { nombre: "Carlos", apellido: "Ramírez" },
+    { nombre: "María", apellido: "Fernández" },
+    { nombre: "Andrés", apellido: "Sánchez" },
+    { nombre: "Sofía", apellido: "López" },
+    { nombre: "Matías", apellido: "Martínez" },
+    { nombre: "Valentina", apellido: "Torres" },
+    { nombre: "Diego", apellido: "Castro" },
+    { nombre: "Camila", apellido: "Rojas" }
+  ])
+  db.clientes.createIndex({nombre:1,apellido:1})

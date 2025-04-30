@@ -1,6 +1,0 @@
-Ventajas de usar un replicador set tiene alta disponibilidad en caso de que un nodo falle el sistema sigue funcionando
-Tiene la posibilidad de quie se agreguen mas nodos para aumentar la capacidad de almacenamiento y procesamiento
-Los datos siempre estan proteguidos ya que se replican automaticamente.
-El sharding en una base de datos de alto nivel aporta mayor escabilidad ya que se pueden agregar mas servidores permitiendo manejar mayor cantidades de datos sin actualizar el hardware
-Como la carga de trabajo se divide en multiples shards el rendimiento mejora
-En caso de que un shard falle el resto sigue funcionando sin interrupciones logrando que se tenga mayor disponobilidad en el sistema
