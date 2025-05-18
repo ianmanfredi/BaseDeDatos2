@@ -1,0 +1,54 @@
+use("tiendaOnline");
+
+db.ventas.aggregate([
+  {
+    // Primero agrupamos los productos por su id para calcular cuantas veces se vendio
+    // y cuanto genero en total
+    $group: {
+      _id: "$producto_id",
+      cantidadDeVentas: { $sum: "$cantidad" },
+      montoTotal: { $sum: "$total" },
+    },
+  },
+  {
+    $sort: {
+      // Ordenamos de mayor a menor en relacion a la cantidad de veces que se vendio
+      cantidadDeVentas: -1,
+    },
+  },
+  {
+    // Limitamos la respuesta asi nos queda solo el top 3 de productos mas vendidos
+    $limit: 3,
+  },
+  {
+    // Luego hacemos un lookup a la tabla productos asi podemos mostrar la informacion de cada producto
+    $lookup: {
+      from: "productos",
+      localField: "_id",
+      foreignField: "_id",
+      as: "infoProducto",
+    },
+  },
+  {
+    $unwind: "$infoProducto",
+  },
+  {
+    // Le añadimos un campo nuevo a cada producto el cual indica su puntuacion promedia
+    $addFields: {
+      puntuacionPromedio: {
+        $avg: "$infoProducto.valoraciones.puntuacion",
+      },
+    },
+  },
+  {
+    // Para finalizar hacemos un project para mostrar solo la informacion que necesitamos
+    $project: {
+      _id: 0,
+      nombre: "$infoProducto.nombre",
+      categoria: "$infoProducto.categoria",
+      cantidadDeVentas: 1,
+      montoTotal: 1,
+      puntuacionPromedio: 1,
+    },
+  },
+]);

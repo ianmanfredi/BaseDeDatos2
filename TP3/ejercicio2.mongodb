@@ -1,0 +1,27 @@
+use("tiendaOnline");
+
+db.productos.aggregate([
+  {
+    // Agrupamos los productos por categoria para obtener el precio promedio, maximo y minimo de cada una
+    $group: {
+      _id: "$categoria",
+      precioPromedio: { $avg: "$precio" },
+      precioMaximo: { $max: "$precio" },
+      precioMinimo: { $min: "$precio" },
+    },
+  },
+]);
+
+db.ventas.aggregate([
+  {
+    // Agrupamos por el pais del cliente para obtener la cantidad de ventas y el monto total de cada uno
+    $group: {
+      _id: "$cliente.pais",
+      cantidadVentas: { $sum: "$cantidad" },
+      montoTotal: { $sum: "$total" },
+    },
+  },
+  {
+    $sort: { montoTotal: -1 },
+  },
+]);

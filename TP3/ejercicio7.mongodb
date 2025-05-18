@@ -1,0 +1,58 @@
+use("tiendaOnline");
+
+db.productos.aggregate([
+  {
+    // Añadimos un nuevo campo calificacionPrecio a cada producto mediante un switch.
+    // Basado en su precio se le asigna un determinado valor
+    $addFields: {
+      calificacionPrecio: {
+        $switch: {
+          branches: [
+            { case: { $lt: ["$precio", 100] }, then: "Economico" },
+            { case: { $lt: ["$precio", 500] }, then: "Estandar" },
+            { case: { $gte: ["$precio", 500] }, then: "Premium" },
+          ],
+        },
+      },
+    },
+  },
+  {
+    // Hacemos un project para tener una respuesta mas concisa
+    // y se aprecie mejor el nuevo campo
+    $project: {
+      nombre: 1,
+      precio: 1,
+      categoria: 1,
+      calificacionPrecio: 1,
+      _id: 0,
+    },
+  },
+]);
+
+//Clasificar las ventas según su total: "Pequeña" (<200), "Mediana" (200-800), "Grande" (>800).
+
+db.ventas.aggregate([
+  {
+    // Con la tabla ventas hacemos lo mismo, agregamos un nuevo campo a cada registro con la ayuda del switch
+    $addFields: {
+      calificacionVenta: {
+        $switch: {
+          branches: [
+            { case: { $lt: ["$total", 200] }, then: "Pequenia" },
+            { case: { $lt: ["$total", 800] }, then: "Mediana" },
+            { case: { $gte: ["$total", 800] }, then: "Grande" },
+          ],
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      producto_id: 1,
+      total: 1,
+      metodo_pago: 1,
+      calificacionVenta: 1,
+      _id: 0,
+    },
+  },
+]);

@@ -1,0 +1,46 @@
+use("tiendaOnline");
+db.ventas.aggregate([
+  {
+    // Separamos el pipeline con facet, por una parte obtenemos las ventas por mes
+    // y por otra el dia con mas ventas
+    $facet: {
+      ventasPorMes: [
+        {
+          // Añadimos un nuevo campo mes, que mediante month, utiliza el campo ya existente fecha,
+          // para obtener su mes
+          $addFields: {
+            mes: { $month: "$fecha" },
+          },
+        },
+        {
+          // Agrupamos por ese nuevo campo mes y sumamos el total vendido
+          $group: {
+            _id: { mes: "$mes" },
+            totalVendido: { $sum: "$total" },
+          },
+        },
+        { $sort: { "_id.mes": 1 } },
+      ],
+      diaMasVendido: [
+        {
+          // Aca hacemos algo similar a lo que hicimos para obtener el mes
+          // pero esta vez obtenemos cada dia de la semana en la que se realizaron ventas
+          $addFields: {
+            diaSemana: { $dayOfWeek: "$fecha" },
+          },
+        },
+        {
+          // Agrupamos por este nuevo campo y sumamos el total vendido de cada
+          $group: {
+            _id: "$diaSemana",
+            totalVendido: { $sum: "$total" },
+          },
+        },
+        // Ordenamos de mayor a menor en cuanto a el total vendido
+        // y limitamos a 1 la respuesta para que nos muestre solo el dia en que mas ventas se realizaron
+        { $sort: { totalVendido: -1 } },
+        { $limit: 1 },
+      ],
+    },
+  },
+]);

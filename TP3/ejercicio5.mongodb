@@ -1,0 +1,23 @@
+use("tiendaOnline");
+
+db.ventas.aggregate([
+  {
+    // Traemos la tabla productos con un lookup para poder trabajar con su informacion
+    $lookup: {
+      from: "productos",
+      localField: "producto_id",
+      foreignField: "_id",
+      as: "infoProducto",
+    },
+  },
+  {
+    $unwind: "$infoProducto",
+  },
+  {
+    // Gracias al lookup hecho podemos acceder, por ejemplo, a la categoria del producto
+    $group: {
+      _id: "$infoProducto.categoria",
+      totalVendido: { $sum: "$total" },
+    },
+  },
+]);

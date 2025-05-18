@@ -1,0 +1,27 @@
+use("tiendaOnline");
+
+db.productos.aggregate([
+  {
+    // Con project limitamos la respuesta con los campos que le especificamos
+    // y podemos agregarle nuevos como precioConImpuesto y descuento
+    $project: {
+      nombre: 1,
+      precio: 1,
+      precioConImpuesto: {
+        $add: ["$precio", { $multiply: ["$precio", 0.21] }],
+      },
+      _id: 0,
+    },
+  },
+]);
+
+db.ventas.aggregate([
+  {
+    $project: {
+      _id: 1,
+      idCliente: "$cliente.nombre",
+      total: 1,
+      descuento: { $multiply: ["$total", 0.1] },
+    },
+  },
+]);

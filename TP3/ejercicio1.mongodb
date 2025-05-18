@@ -1,0 +1,18 @@
+use("tiendaOnline");
+
+db.productos.aggregate([
+  // Filtramos con match para que nos muestre solo los productos
+  // que tengan la categoria electronica, con un precio mayor a 500
+  { $match: { categoria: "Electrónica", precio: { $gt: 500 } } },
+]);
+
+db.ventas.aggregate([
+  {
+    // match primero obtiene todas las ventas realizas a clientes cuyo pais sea España,
+    // y despues filtra las que el estado no sea Entregado
+    $match: {
+      "cliente.pais": "España",
+      estado: "Entregado",
+    },
+  },
+]);
