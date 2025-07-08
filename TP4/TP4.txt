@@ -1,0 +1,90 @@
+ EJERCICIO 1:
+CREATE
+  (e1:Empleado {nombre: "Sofia"}),
+  (e2:Empleado {nombre: "Juan"}),
+  (e3:Empleado {nombre: "Carlos"}),
+
+  (d1:Departamento {nombre: "Dev"}),
+  (d2:Departamento {nombre: "Marketing"}),
+  (d3:Departamento {nombre: "Finanzas"}),
+
+  (e1)-[:PERTENECE_A]->(d1),
+  (e2)-[:PERTENECE_A]->(d2),
+  (e3)-[:PERTENECE_A]->(d3),
+
+  (p1:Proyecto {nombre: "Proyecto A"}),
+  (p2:Proyecto {nombre: "Proyecto B"}),
+
+  (e1)-[:LIDERA]->(p1),
+  (e2)-[:LIDERA]->(p2),
+
+  (e1)-[:TRABAJA_EN {horas: 20}]->(p1),
+  (e3)-[:TRABAJA_EN {horas: 10}]->(p1),
+  (e2)-[:TRABAJA_EN {horas: 15}]->(p2),
+  (e3)-[:TRABAJA_EN {horas: 5}]->(p2);
+
+MATCH (l:Empleado)-[:LIDERA]->(p:Proyecto)
+OPTIONAL MATCH (e:Empleado)-[t:TRABAJA_EN]->(p)
+RETURN p.nombre AS Proyecto, l.nombre AS Lider, COLLECT(DISTINCT e.nombre) AS Empleados;
+
+MATCH (:Empleado)-[t:TRABAJA_EN]->(p:Proyecto)
+RETURN p.nombre AS Proyecto, SUM(t.horas) AS TotalHoras;
+
+MATCH (e:Empleado)-[:TRABAJA_EN]->(p:Proyecto)
+WITH e, COUNT(DISTINCT p) AS cantidadProyectos
+WHERE cantidadProyectos > 1
+RETURN e.nombre AS Empleado, cantidadProyectos;
+
+EJERCICIO 2:
+
+CREATE
+  (s1:Estudiante {nombre: "Marta"}),
+  (s2:Estudiante {nombre: "Nicolas"}),
+  (s3:Estudiante {nombre: "Soledad"}),
+
+  (c1:Carrera {nombre: "Programación"}),
+  (c2:Carrera {nombre: "Derecho"}),
+  (c3:Carrera {nombre: "Profesorado Ingles"}),
+
+  (s1)-[:PERTENECE_A]->(c1),
+  (s2)-[:PERTENECE_A]->(c2),
+  (s3)-[:PERTENECE_A]->(c3),
+
+  (l1:Libro {titulo: "HTML y CSS "}),
+  (l2:Libro {titulo: "Derecho Constitucional"}),
+  (l3:Libro {titulo: "Aprende Python"}),
+  (l4:Libro {titulo: "English Speech"}),
+
+  (cat1:Categoria {nombre: "Base de datos"}),
+  (cat2:Categoria {nombre: "Derecho"}),
+  (cat3:Categoria {nombre: "Ingles"}),
+  (cat4:Categoria {nombre: "Educación"}),
+
+  (l1)-[:PERTENECE_A]->(cat1),
+  (l2)-[:PERTENECE_A]->(cat2),
+  (l3)-[:PERTENECE_A]->(cat3),
+  (l4)-[:PERTENECE_A]->(cat4),
+
+  (s1)-[:PIDIO {fecha: date("2025-07-01"), estado: "Activo"}]->(l1),
+  (s1)-[:PIDIO {fecha: date("2025-06-15"), estado: "Devuelto"}]->(l4),
+  (s2)-[:PIDIO {fecha: date("2025-06-20"), estado: "Activo"}]->(l2),
+  (s2)-[:PIDIO {fecha: date("2025-06-10"), estado: "Devuelto"}]->(l1),
+  (s3)-[:PIDIO {fecha: date("2025-07-03"), estado: "Activo"}]->(l3);
+
+MATCH (:Estudiante)-[p:PIDIO]->(l:Libro)
+WHERE p.estado = "Activo"
+RETURN l.titulo AS LibroPrestado;
+
+MATCH (s:Estudiante)-[p:PIDIO]->(:Libro)
+RETURN s.nombre AS Estudiante, COUNT(p) AS LibrosPrestados;
+
+MATCH (:Estudiante)-[p:PIDIO {estado: "Activo"}]->(l:Libro)-[:PERTENECE_A]->(c:Categoria)
+RETURN c.nombre AS Categoria, COUNT(*) AS TotalPrestamos
+ORDER BY TotalPrestamos DESC;
+
+MATCH (s:Estudiante)
+WHERE NOT EXISTS {
+  MATCH (s)-[p:PIDIO]->(:Libro)
+  WHERE p.estado = "Activo"
+}
+RETURN s.nombre AS EstudianteSinPrestamoActivo;
